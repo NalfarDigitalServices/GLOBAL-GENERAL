@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOBAL GENERAL TRADING COMPANY <div class="LOGIN"></div></title>
+    <link rel="icon" type="image/x-icon" href="GLOBAL LOGO copy 2.png">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url("m7.jpg"); /* Set background image */
+            background-size: cover; /* Ensure the image covers the whole page */
+            background-position: center; /* Center the image */
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+
+        .form-container {
+            background: rgba(250, 249, 249, 0.486);
+            padding: 3px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+        }
+
+        /* Animation for the logo */
+        @keyframes logoAnimation {
+            0% {
+                transform: rotate(0deg);
+                opacity: 0.5;
+            }
+            50% {
+                transform: rotate(360deg);
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(0deg);
+                opacity: 0.5;
+            }
+        }
+
+        .form-container img {
+            width: 100px;
+            margin-bottom: 5px;
+            animation: logoAnimation 5s infinite ease-in-out; /* Apply animation to logo */
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #f8f8f8;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: rgb(4, 4, 78);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: rgb(243, 141, 7);
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Form-ka -->
+    <div class="form-container">
+        <img src="GLOBAL LOGO copy 2.png" alt="GLOBAL">
+        <h2>GLOBAL GENERAL TARDING COMPANY</h2>
+        <input type="email" id="email" placeholder="Gmail">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="validateLogin()">Login</button>
+        <p class="error" id="errorMsg"></p>
+    </div>
+
+    <script>
+        // **Gmail & Password-ka la bedeli karo**
+        let correctEmail = "mohannalfar@gmail.com";
+        let correctPassword = "2025";
+
+        function validateLogin() {
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let errorMsg = document.getElementById("errorMsg");
+
+            if (email === correctEmail && password === correctPassword) {
+                window.location.href = "Dashbaord.html"; // Page kale haddii sax yihiin
+            } else if (email !== correctEmail && password !== correctPassword) {
+                errorMsg.textContent = "Gmail-ka iyo Password-ka waa qalad, fadlan iska sax.";
+            } else if (email !== correctEmail) {
+                errorMsg.textContent = "Gmail-ka waa qalad.";
+            } else if (password !== correctPassword) {
+                errorMsg.textContent = "Password-ka waa qalad.";
+            }
+
+            errorMsg.style.display = "block";
+        }
+
+        // ENTER key login samee
+        document.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                validateLogin();
+            }
+        });
+    </script>
+
+</body>
+</html>

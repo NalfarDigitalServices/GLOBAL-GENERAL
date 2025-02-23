@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOBAL GENERAL TRADING COMPANY <div class="LOGIN"></div></title>
+    <link rel="icon" type="image/x-icon" href="GLOBAL LOGO copy 2.png">
+
+    <style>
+        body { font-family: Arial, sans-serif; background: #fff; color: black; text-align: center; }
+        header { background: rgb(16, 1, 99); color: white; padding: 20px; font-size: 24px; display: flex; align-items: center; justify-content: center; }
+        header img { height: 50px; margin-right: 10px; }
+        form { background: #f8f8f8; padding: 15px; width: 50%; margin: 20px auto; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        form input, form button { margin: 10px; padding: 10px; width: 90%; border: 1px solid #ddd; border-radius: 5px; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 10px; text-align: center; }
+        th { background: rgb(3, 59, 92); color: white; }
+        button { background: rgb(1, 68, 99); color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; }
+        footer { background: rgb(117, 121, 119); color: white; padding: 10px; margin-top: 20px; }
+        .print-btn, .undo-btn { margin-top: 20px; }
+
+        /* Ka qarin raadinta iyo badhanka delete marka la daabacayo */
+        @media print {
+            form, .print-btn, .undo-btn, #searchInput {
+                display: none !important;
+            }
+            /* Muujinta table-ka oo dhan oo ay ku jiraan badhanka delete */
+            table, td, th {
+                display: table-cell !important;
+            }
+
+            /* Muujinta totalka lacagta iyo magaca qofka */
+            .print-total {
+                display: block !important;
+                text-align: center;
+                margin-top: 20px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <img src="GLOBAL LOGO copy 2.png" alt="Logo">
+        GLOBAL GENERAL TRADING COMPANY
+    </header>
+    
+    <form id="debtForm">
+        <input type="text" id="name" placeholder="Magaca qofka" required>
+        <input type="date" id="date" required>
+        <input type="text" id="item" placeholder="Sheyga la qaatay" required>
+        <input type="number" id="amount" placeholder="Lacagta" min="1" required>
+        <button type="submit">Kaydi</button>
+    </form>
+
+    <!-- Raadin Input -->
+    <input type="text" id="searchInput" placeholder="Raadi sheyga..." onkeyup="searchItem()">
+    
+    <button class="print-btn" onclick="window.print()">Daabac</button>
+    <button class="undo-btn" id="undoButton" onclick="undoDelete()">Soo celin</button>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Magaca qofka</th>
+                <th>Tariikhda</th>
+                <th>Sheyga la qaatay</th>
+                <th>Lacagta</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="debtTable"></tbody>
+        <tfoot id="totalRow">
+            <tr>
+                <td colspan="4">Total</td>
+                <td id="totalAmount">$0</td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    <footer>
+        <p>📞 610369120 | ✉️ <a href="mohannalfar@gmail.com">info@casri.com</a></p>
+    </footer>
+   
+    
+    <!-- Print Total -->
+    <div class="print-total" id="printTotal"></div>
+
+    <script>
+        let debts = JSON.parse(localStorage.getItem('debts')) || [];
+        let deletedDebts = JSON.parse(localStorage.getItem('deletedDebts')) || [];
+
+        function renderTable(filteredDebts) {
+            const table = document.getElementById('debtTable');
+            table.innerHTML = '';
+            let total = 0;
+            
+            filteredDebts.forEach((debt, index) => {
+                total += Number(debt.amount);
+                table.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${debt.name}</td>
+                        <td>${debt.date}</td>
+                        <td>${debt.item}</td>
+                        <td>$${Number(debt.amount).toLocaleString()}</td>
+                        <td><button onclick="deleteRow(${index})">Delete</button></td>
+                    </tr>`;
+            });
+
+            document.getElementById('totalAmount').innerText = `$${total.toLocaleString()}`;
+            localStorage.setItem('debts', JSON.stringify(debts));
+            localStorage.setItem('deletedDebts', JSON.stringify(deletedDebts));
+
+            // Show/hide undo button
+            document.getElementById('undoButton').style.display = deletedDebts.length > 0 ? 'block' : 'none';
+
+            // Muujinta lacagta guud ee warqada la daabacayo
+            document.getElementById('printTotal').innerText = `Lacagta Guud: $${total.toLocaleString()}`;
+        }
+        
+        document.getElementById('debtForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            let amountValue = document.getElementById('amount').value;
+            if (amountValue <= 0 || isNaN(amountValue)) {
+                alert("Lacagta waa inay noqotaa tiro sax ah oo ka weyn eber!");
+                return;
+            }
+
+            let newDebt = {
+                name: document.getElementById('name').value,
+                date: document.getElementById('date').value,
+                item: document.getElementById('item').value,
+                amount: amountValue
+            };
+
+            debts.push(newDebt);
+            renderTable(debts);
+            this.reset();
+        });
+
+        function deleteRow(index) {
+            deletedDebts.push(debts[index]);
+            debts.splice(index, 1);
+            renderTable(debts);
+        }
+
+        function undoDelete() {
+            if (deletedDebts.length > 0) {
+                debts.push(deletedDebts.pop());
+                renderTable(debts);
+            }
+        }
+
+        // Function to filter the debts based on the search input
+        function searchItem() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filteredDebts = debts.filter(debt => {
+                return debt.name.toLowerCase().includes(query) || 
+                       debt.date.toLowerCase().includes(query) ||
+                       debt.item.toLowerCase().includes(query) ||
+                       debt.amount.toString().includes(query);
+            });
+
+            renderTable(filteredDebts);
+        }
+        
+        renderTable(debts);
+    </script>
+   
+</body>
+</html>
